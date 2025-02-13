@@ -13,18 +13,18 @@ def main():
     speaker_wav = sys.argv[2]
     language = sys.argv[3]
     output_file = sys.argv[4]
-
+    
     print(f"Text: {text}")
     print(f"Speaker WAV: {speaker_wav}")
     print(f"Language: {language}")
     print(f"Output File: {output_file}")
-
+    
     try:
         # Load environment variables from .env file
         load_dotenv(dotenv_path='/mnt/f/js-bambisleep-chat-MK-VIII/.env')
 
         # Initialize TTS
-        tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False, gpu=False)
+        tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=False, gpu=True)
 
         # Synthesize speech
         tts.tts_to_file(text=text, speaker_wav=speaker_wav, file_path=output_file)

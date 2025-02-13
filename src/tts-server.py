@@ -10,6 +10,7 @@ def generate_tts_route():
     text = data.get('text')
     speaker_wav = data.get('speaker')
     language = data.get('language')
+    use_cuda = data.get('use_cuda', True)  # Default to True if not provided
 
     if not text or not speaker_wav or not language:
         return jsonify({'error': 'Missing required parameters'}), 400
@@ -20,7 +21,7 @@ def generate_tts_route():
     try:
         command = [
             "python", "./src/tts.py",
-            text, speaker_wav, language, output_file
+            text, speaker_wav, language, output_file, str(use_cuda)
         ]
         result = subprocess.run(command, capture_output=True, text=True)
         if result.returncode != 0:
