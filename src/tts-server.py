@@ -4,7 +4,7 @@ import os
 
 app = Flask(__name__)
 
-@app.route('/generate-tts', methods=['POST'])
+@app.route('/api/tts', methods=['POST'])
 def generate_tts_route():
     data = request.json
     text = data.get('text')
