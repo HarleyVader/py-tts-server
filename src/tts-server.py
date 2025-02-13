@@ -19,7 +19,7 @@ def generate_tts_route():
 
     try:
         command = [
-            "python", "/mnt/f/js-bambisleep-chat-MK-VIII/workers/python/tts.py",
+            "python", "./src/tts.py",
             text, speaker_wav, language, output_file
         ]
         result = subprocess.run(command, capture_output=True, text=True)
@@ -30,4 +30,4 @@ def generate_tts_route():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002)
+    app.run(host='localhost', port=5002)
