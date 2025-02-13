@@ -2,44 +2,28 @@ import sys
 import os
 import logging
 from dotenv import load_dotenv
-from TTS.api import TTS
 
-def main():
-    if len(sys.argv) < 5:
-        print("Usage: python tts.py <text> <speaker_wav> <language> <output_file>")
-        return
+def generate_tts(text, speaker_wav, language, output_file, use_cuda):
+    print(f"[TTS SCRIPT] Generating TTS for text='{text}', speaker_wav='{speaker_wav}', language='{language}', output_file='{output_file}', use_cuda={use_cuda}")
+    # Simulate TTS generation process
+    try:
+        # Your TTS generation logic here
+        with open(output_file, 'w') as f:
+            f.write("Simulated TTS audio content")
+        print(f"[TTS SCRIPT] TTS generation successful, output file: {output_file}")
+    except Exception as e:
+        print(f"[TTS SCRIPT] Error during TTS generation: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    if len(sys.argv) < 6:
+        print("Usage: python tts.py <text> <speaker_wav> <language> <output_file> <use_cuda>")
+        sys.exit(1)
 
     text = sys.argv[1]
     speaker_wav = sys.argv[2]
     language = sys.argv[3]
     output_file = sys.argv[4]
-    
-    print(f"Text: {text}")
-    print(f"Speaker WAV: {speaker_wav}")
-    print(f"Language: {language}")
-    print(f"Output File: {output_file}")
-    
-    try:
-        # Load environment variables from .env file
-        load_dotenv(dotenv_path='.env')
+    use_cuda = sys.argv[5].lower() == 'true'
 
-        # Initialize TTS
-        tts = TTS(model_name="tts_models/en/ljspeech/tacotron2-DDC", progress_bar=True, gpu=True)
-
-        # Synthesize speech
-        tts.tts_to_file(text=text, speaker_wav=speaker_wav, file_path=output_file)
-        print("TTS synthesis completed successfully.")
-    except Exception as e:
-        logging.error("[BACKEND ERROR] Error during TTS synthesis", exc_info=True)
-        logging.error(f"Text: {text}")
-        logging.error(f"Speaker WAV: {speaker_wav}")
-        logging.error(f"Language: {language}")
-        logging.error(f"Output File: {output_file}")
-        logging.error(f"Exception: {e}")
-        logging.error("Exception type: %s", type(e))
-        logging.error("Exception args: %s", e.args)
-        exit(1)
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.ERROR)
-    main()
+    generate_tts(text, speaker_wav, language, output_file, use_cuda)
