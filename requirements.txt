@@ -1,0 +1,6 @@
+Flask==2.0.3
+coqui-ai/tts==0.0.5
+numpy==1.21.2
+torch==1.9.0
+soundfile==0.10.3
+requests==2.26.0
