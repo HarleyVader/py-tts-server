@@ -3,6 +3,7 @@ import os
 import logging
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from tts import generate_tts
 
 app = Flask(__name__)
 load_dotenv()
@@ -22,18 +23,6 @@ def tts_endpoint():
         return audio_content, 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-def generate_tts(text, speaker_wav, language, output_file, use_cuda):
-    print(f"[TTS SCRIPT] Generating TTS for text='{text}', speaker_wav='{speaker_wav}', language='{language}', output_file='{output_file}', use_cuda={use_cuda}")
-    # Simulate TTS generation process
-    try:
-        # Your TTS generation logic here
-        with open(output_file, 'w') as f:
-            f.write("Simulated TTS audio content")
-        print(f"[TTS SCRIPT] TTS generation successful, output file: {output_file}")
-    except Exception as e:
-        print(f"[TTS SCRIPT] Error during TTS generation: {str(e)}")
-        raise
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'serve':
