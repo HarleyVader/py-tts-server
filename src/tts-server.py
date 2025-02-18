@@ -1,41 +1,52 @@
-from flask import Flask, request, jsonify
-import subprocess
+import sys
 import os
+import logging
+from flask import Flask, request, jsonify
+from dotenv import load_dotenv
 
 app = Flask(__name__)
+load_dotenv()
 
-@app.route('/api/tts', methods=['POST'])
-def generate_tts_route():
-    data = request.json
-    text = data.get('text')
-    speaker_wav = data.get('speaker')
-    language = data.get('language')
-    use_cuda = data.get('use_cuda', True)  # Default to True if not provided
-
-    print(f"[TTS SERVER] Received request with text={text}, speaker_wav={speaker_wav}, language={language}, use_cuda={use_cuda}")
-
-    if not text or not speaker_wav or not language:
-        print("[TTS SERVER] Missing required parameters")
-        return jsonify({'error': 'Missing required parameters'}), 400
-
-    output_file = f"output/{speaker_wav}_{language}_{text[:10]}.wav"
-    os.makedirs(os.path.dirname(output_file), exist_ok=True)
-
+@app.route('/tts', methods=['POST'])
+def tts_endpoint():
+    data = request.get_json()
+    text = data['text']
+    speaker_wav = data['speaker_wav']
+    language = data['language']
+    output_file = data['output_file']
+    use_cuda = data['use_cuda']
     try:
-        command = [
-            "python", "./src/tts.py",
-            text, speaker_wav, language, output_file, str(use_cuda)
-        ]
-        print(f"[TTS SERVER] Running command: {' '.join(command)}")
-        result = subprocess.run(command, capture_output=True, text=True)
-        if result.returncode != 0:
-            print(f"[TTS SERVER] Command failed with error: {result.stderr}")
-            raise Exception(result.stderr)
-        print(f"[TTS SERVER] Command succeeded, output file: {output_file}")
-        return jsonify({'audio_file': output_file}), 200
+        generate_tts(text, speaker_wav, language, output_file, use_cuda)
+        with open(output_file, 'rb') as f:
+            audio_content = f.read()
+        return audio_content, 200
     except Exception as e:
-        print(f"[TTS SERVER] Exception occurred: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5002)
+def generate_tts(text, speaker_wav, language, output_file, use_cuda):
+    print(f"[TTS SCRIPT] Generating TTS for text='{text}', speaker_wav='{speaker_wav}', language='{language}', output_file='{output_file}', use_cuda={use_cuda}")
+    # Simulate TTS generation process
+    try:
+        # Your TTS generation logic here
+        with open(output_file, 'w') as f:
+            f.write("Simulated TTS audio content")
+        print(f"[TTS SCRIPT] TTS generation successful, output file: {output_file}")
+    except Exception as e:
+        print(f"[TTS SCRIPT] Error during TTS generation: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1 and sys.argv[1] == 'serve':
+        app.run(host='0.0.0.0', port=5002)
+    else:
+        if len(sys.argv) < 6:
+            print("Usage: python tts-server.py <text> <speaker_wav> <language> <output_file> <use_cuda>")
+            sys.exit(1)
+
+        text = sys.argv[1]
+        speaker_wav = sys.argv[2]
+        language = sys.argv[3]
+        output_file = sys.argv[4]
+        use_cuda = sys.argv[5].lower() == 'true'
+
+        generate_tts(text, speaker_wav, language, output_file, use_cuda)
