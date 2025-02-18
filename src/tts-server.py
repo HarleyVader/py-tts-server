@@ -3,7 +3,7 @@ import os
 import logging
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
-from tts import generate_tts
+from tts.tts import generate_tts  # Updated import statement
 
 app = Flask(__name__)
 load_dotenv()
