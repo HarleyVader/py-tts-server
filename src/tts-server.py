@@ -30,7 +30,7 @@ def generate_tts():
     if not text:
         return jsonify({"error": "Text parameter is required."}), 400
 
-    speaker_wav = data.get('speaker_wav', './bambi.wav')
+    speaker_wav = data.get('speaker_wav', '../bambi.wav')
     language = data.get('language', 'en')
     
     # Check if speaker_wav file exists
