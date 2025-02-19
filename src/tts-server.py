@@ -11,6 +11,10 @@ device = "cuda" if torch.cuda.is_available() else "cpu"
 # Init TTS
 tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
 
+@app.route('/')
+def index():
+    return "Welcome to the TTS server. Use the /tts endpoint to generate speech."
+
 @app.route('/tts', methods=['POST'])
 def generate_tts():
     data = request.json
