@@ -23,7 +23,7 @@ def generate_tts():
         data = request.args
 
     text = data.get('text', 'Hello bambi!')
-    speaker_wav = data.get('speaker_wav', './bambi.wav')
+    speaker_wav = data.get('speaker_wav', 'bambi.wav')
     language = data.get('language', 'en')
     
     # Generate output filename based on text
