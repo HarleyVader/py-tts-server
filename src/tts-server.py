@@ -15,9 +15,13 @@ tts = TTS("tts_models/multilingual/multi-dataset/xtts_v2").to(device)
 def index():
     return "Welcome to the TTS server. Use the /tts endpoint to generate speech."
 
-@app.route('/tts', methods=['POST'])
+@app.route('/tts', methods=['GET', 'POST'])
 def generate_tts():
-    data = request.json
+    if request.method == 'POST':
+        data = request.json
+    else:
+        data = request.args
+
     text = data.get('text', 'Hello bambi!')
     speaker_wav = data.get('speaker_wav', './bambi.wav')
     language = data.get('language', 'en')
