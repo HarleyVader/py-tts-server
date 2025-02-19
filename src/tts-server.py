@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 import torch
 from TTS.api import TTS
 
@@ -23,15 +23,22 @@ def generate_tts():
         data = request.args
 
     text = data.get('text', 'Hello bambi!')
-    speaker_wav = data.get('speaker_wav', 'bambi.wav')
+    speaker_wav = data.get('speaker_wav', './bambi.wav')
     language = data.get('language', 'en')
+    
+    # Check if speaker_wav file exists
+    if not os.path.isfile(speaker_wav):
+        return jsonify({"error": f"Speaker WAV file '{speaker_wav}' not found."}), 400
     
     # Generate output filename based on text
     output_filename = '-'.join(text.split()) + '.wav'
     output_path = output_filename
 
-    # Generate TTS
-    tts.tts_to_file(text=text, speaker_wav=speaker_wav, language=language, file_path=output_path)
+    try:
+        # Generate TTS
+        tts.tts_to_file(text=text, speaker_wav=speaker_wav, language=language, file_path=output_path)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
     return send_file(output_path, as_attachment=True)
 
