@@ -1,9 +1,13 @@
 import os
+import logging
 from flask import Flask, request, send_file, jsonify
 import torch
 from TTS.api import TTS
 
 app = Flask(__name__)
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 # Get device
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -22,7 +26,10 @@ def generate_tts():
     else:
         data = request.args
 
-    text = data.get('text', 'Hello bambi!')
+    text = data.get('text')
+    if not text:
+        return jsonify({"error": "Text parameter is required."}), 400
+
     speaker_wav = data.get('speaker_wav', './bambi.wav')
     language = data.get('language', 'en')
     
@@ -38,6 +45,7 @@ def generate_tts():
         # Generate TTS
         tts.tts_to_file(text=text, speaker_wav=speaker_wav, language=language, file_path=output_path)
     except Exception as e:
+        logging.error(f"Error generating TTS: {e}")
         return jsonify({"error": str(e)}), 500
 
     return send_file(output_path, as_attachment=True)
