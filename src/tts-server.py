@@ -6,6 +6,9 @@ from TTS.api import TTS
 import threading
 import time
 
+# Set environment variable for CUDA launch blocking
+os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
+
 app = Flask(__name__)
 
 # Configure logging
@@ -51,6 +54,9 @@ def generate_tts():
         # Generate TTS
         tts.tts_to_file(text=text, speaker_wav=speaker_wav, language=language, file_path=output_path)
         logging.info(f"TTS generated successfully: {output_path}")
+    except torch.cuda.CudaError as e:
+        logging.error(f"CUDA error: {e}")
+        return jsonify({"error": f"CUDA error: {e}"}), 500
     except Exception as e:
         logging.error(f"Error generating TTS: {e}")
         return jsonify({"error": str(e)}), 500
