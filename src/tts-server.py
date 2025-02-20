@@ -6,6 +6,7 @@ from TTS.api import TTS
 import threading
 import time
 import schedule
+import re
 
 # Set environment variable for CUDA launch blocking
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
@@ -47,8 +48,11 @@ def generate_tts():
     if not os.path.isfile(speaker_wav):
         return jsonify({"error": f"Speaker WAV file '{speaker_wav}' not found."}), 400
     
-    # Generate output filename based on text
-    output_filename = '-'.join(text.split()) + '.wav'
+    # Clean the text to remove unwanted characters
+    clean_text = re.sub(r'[,.?!"*]', '', text)
+    
+    # Generate output filename based on cleaned text
+    output_filename = '-'.join(clean_text.split()) + '.wav'
     output_path = os.path.join(AUDIO_FOLDER, output_filename)
 
     try:
