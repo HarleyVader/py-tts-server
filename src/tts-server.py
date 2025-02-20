@@ -5,6 +5,7 @@ import torch
 from TTS.api import TTS
 import threading
 import time
+import schedule
 
 # Set environment variable for CUDA launch blocking
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
@@ -76,16 +77,20 @@ def serve_audio(filename):
     return send_file(file_path, as_attachment=True)
 
 def garbage_collector():
+    now = time.time()
+    for filename in os.listdir(AUDIO_FOLDER):
+        file_path = os.path.join(AUDIO_FOLDER, filename)
+        if os.path.isfile(file_path) and now - os.path.getmtime(file_path) > 600:
+            os.remove(file_path)
+            logging.info(f"Deleted old audio file: {file_path}")
+
+def schedule_garbage_collector():
+    schedule.every().day.at("06:00").do(garbage_collector)
     while True:
-        now = time.time()
-        for filename in os.listdir(AUDIO_FOLDER):
-            file_path = os.path.join(AUDIO_FOLDER, filename)
-            if os.path.isfile(file_path) and now - os.path.getmtime(file_path) > 600:
-                os.remove(file_path)
-                logging.info(f"Deleted old audio file: {file_path}")
-        time.sleep(600)
+        schedule.run_pending()
+        time.sleep(1)
 
 if __name__ == '__main__':
-    threading.Thread(target=garbage_collector, daemon=True).start()
+    threading.Thread(target=schedule_garbage_collector, daemon=True).start()
     port = int(os.getenv('TTS_PORT', 5002))
     app.run(host='0.0.0.0', port=port)
