@@ -49,7 +49,7 @@ def generate_tts():
         return jsonify({"error": f"Speaker WAV file '{speaker_wav}' not found."}), 400
     
     # Clean the text to remove unwanted characters
-    clean_text = re.sub(r'[,.?!"*]', '', text)
+    clean_text = re.sub(r'[,.?!\"*]', '', text)
     
     # Generate output filename based on cleaned text
     output_filename = '-'.join(clean_text.split()) + '.wav'
